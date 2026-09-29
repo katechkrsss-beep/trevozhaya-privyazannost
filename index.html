@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Связь с собой</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#fff7fa;color:#30252a}
+nav{position:sticky;top:0;z-index:5;background:#fff;box-shadow:0 3px 15px #0001;display:flex;justify-content:center;gap:8px;padding:12px;flex-wrap:wrap}
+nav button{border:0;background:transparent;padding:10px 16px;border-radius:20px;color:#7e2947;font-weight:700;cursor:pointer}
+nav button.active,nav button:hover{background:#f6dce5}
+.page{display:none;max-width:900px;margin:auto;padding:35px 18px}.page.active{display:block}
+.hero{background:linear-gradient(135deg,#812746,#c55b79);color:white;text-align:center;padding:70px 20px;border-radius:0 0 35px 35px}
+h1{font-size:42px;margin:0 0 12px}h2{color:#8a2949}h3{color:#8a2949}
+.card{background:white;border-radius:22px;padding:25px;margin:18px 0;box-shadow:0 6px 25px #0000000d}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.box{background:#fff0f4;padding:18px;border-radius:16px}
+.start{background:#8a2949;color:white;border:0;border-radius:14px;padding:14px 24px;font-size:16px;cursor:pointer}
+.question{margin-bottom:25px}.answer{display:block;width:100%;text-align:left;border:2px solid #f0d4dd;background:#fff;color:#30252a;border-radius:13px;padding:13px;margin:8px 0;cursor:pointer}
+.answer.selected{border-color:#8a2949;background:#fae8ee}
+.result{display:none;background:#f4dce5;border-radius:18px;padding:22px;margin-top:20px}
+small{color:#806c73}
+</style>
+</head>
+<body>
+
+<nav>
+<button class="active" onclick="showPage('home',this)">Главная</button>
+<button onclick="showPage('about',this)">О привязанности</button>
+<button onclick="showPage('fears',this)">Страхи</button>
+<button onclick="showPage('test',this)">Тест</button>
+<button onclick="showPage('help',this)">Что помогает</button>
+</nav>
+
+<section id="home" class="page active" style="max-width:none;padding:0 0 35px">
+<div class="hero">
+<h1>Связь с собой</h1>
+<p>Тревожная привязанность: какие страхи могут возникать в отношениях?</p>
+<br><button class="start" onclick="showPage('test',document.querySelectorAll('nav button')[3])">Пройти тест</button>
+</div>
+<div class="page active">
+<div class="card"><h2>О проекте</h2><p>Этот сайт создан в рамках школьного проекта по психологии. Здесь можно узнать о стилях привязанности, возможных страхах в отношениях и пройти небольшой ознакомительный тест.</p><small>Тест не является психологической диагностикой.</small></div>
+</div>
+</section>
+
+<section id="about" class="page">
+<h2>Что такое привязанность?</h2>
+<div class="card"><p>Привязанность — это эмоциональная связь человека с другими людьми. Она формируется под влиянием опыта общения и может проявляться по-разному.</p></div>
+<div class="grid">
+<div class="box"><h3>Надёжный тип</h3><p>Человеку обычно проще доверять, говорить о чувствах и сохранять самостоятельность в отношениях.</p></div>
+<div class="box"><h3>Тревожный тип</h3><p>Может быть сильная потребность в подтверждении чувств и повышенная тревога из-за возможного отвержения.</p></div>
+<div class="box"><h3>Избегающий тип</h3><p>Человек может испытывать дискомфорт от чрезмерной близости и предпочитать больше личного пространства.</p></div>
+<div class="box"><h3>Тревожно-избегающий</h3><p>Могут сочетаться желание близости и страх перед ней.</p></div>
+</div>
+</section>
+
+<section id="fears" class="page">
+<h2>Какие страхи могут возникать?</h2>
+<div class="grid">
+<div class="box"><h3>Отвержение</h3><p>«А вдруг меня разлюбят или перестанут выбирать?»</p></div>
+<div class="box"><h3>Потеря отношений</h3><p>Сильное беспокойство при мысли о расставании.</p></div>
+<div class="box"><h3>Недостаток внимания</h3><p>Тревога, когда человек отвечает не сразу или становится менее активным.</p></div>
+<div class="box"><h3>Сомнения в себе</h3><p>Мысли о том, достаточно ли ты важен для другого человека.</p></div>
+</div>
+</section>
+
+<section id="test" class="page">
+<h2>Тест: какой стиль отношений тебе ближе?</h2>
+<div class="card"><p><b>Как проходить:</b> выбери вариант, который чаще всего похож на твою реакцию. В конце сайт покажет наиболее выраженный стиль.</p><small>Результат ознакомительный и не является диагнозом.</small></div>
+<div id="quiz"></div>
+<button class="start" onclick="calculate()">Получить результат</button>
+<div id="result" class="result"></div>
+</section>
+
+<section id="help" class="page">
+<h2>Что может помочь?</h2>
+<div class="card"><div class="grid">
+<div class="box">Замечать свои эмоции и мысли.</div>
+<div class="box">Говорить о чувствах спокойно и прямо.</div>
+<div class="box">Не делать выводы только по одному сообщению или ситуации.</div>
+<div class="box">Сохранять личные границы и интересы вне отношений.</div>
+<div class="box">Обращаться за поддержкой к близким или специалисту, если тревога сильно мешает жизни.</div>
+</div></div>
+</section>
+
+<script>
+const questions=[
+["Если человек долго не отвечает…",["Я спокойно занимаюсь своими делами.","Начинаю думать, что он потерял интерес.","Мне хочется отдалиться и не писать первым.","Я переживаю, но одновременно не хочу показывать это."]],
+["Когда в отношениях возникает конфликт…",["Я стараюсь спокойно обсудить проблему.","Боюсь, что конфликт приведёт к расставанию.","Мне проще взять дистанцию.","Мне хочется близости, но я могу резко закрыться."]],
+["Если партнёр хочет провести время отдельно…",["Я нормально к этому отношусь.","Могу подумать, что я ему больше не нужен.","Мне даже комфортнее иметь больше пространства.","Мне сложно понять, хочу ли я быть ближе или дальше."]],
+["Мне проще всего…",["Доверять человеку и говорить о своих чувствах.","Получать подтверждение, что меня любят.","Сохранять независимость и личное пространство.","То приближаться к человеку, то отдаляться."]],
+["Когда я думаю о расставании…",["Понимаю, что будет неприятно, но смогу справиться.","Очень боюсь остаться один/одна.","Думаю, что лучше вообще не зависеть от отношений.","Одновременно боюсь потери и близости."]],
+["В отношениях для меня важно…",["Близость и самостоятельность одновременно.","Часто чувствовать, что я важен/важна.","Иметь много личного пространства.","Постоянно разбираться в своих противоречивых чувствах."]]
+];
+const names=["Надёжный","Тревожный","Избегающий","Тревожно-избегающий"];
+const quiz=document.getElementById("quiz");
+questions.forEach((q,i)=>{
+let d=document.createElement("div");d.className="card question";
+d.innerHTML="<h3>"+(i+1)+". "+q[0]+"</h3>";
+q[1].forEach((a,j)=>d.innerHTML+=`<button class="answer" data-q="${i}" data-a="${j}" onclick="pick(this)">${a}</button>`);
+quiz.appendChild(d);
+});
+function pick(btn){
+document.querySelectorAll(`[data-q="${btn.dataset.q}"]`).forEach(x=>x.classList.remove("selected"));
+btn.classList.add("selected");
+}
+function calculate(){
+let scores=[0,0,0,0], done=0;
+questions.forEach((_,i)=>{
+let x=document.querySelector(`.answer.selected[data-q="${i}"]`);
+if(x){scores[+x.dataset.a]++;done++;}
+});
+let r=document.getElementById("result");r.style.display="block";
+if(done<questions.length){r.innerHTML="<b>Почти готово!</b><br>Ответь на все вопросы, чтобы получить результат.";return;}
+let max=Math.max(...scores), idx=scores.indexOf(max);
+let texts=[
+"Тебе может быть ближе надёжный стиль: обычно проще сочетать близость, доверие и самостоятельность.",
+"Тебе может быть ближе тревожный стиль: особенно важны уверенность в отношениях и подтверждение чувств.",
+"Тебе может быть ближе избегающий стиль: комфорт может быть связан с самостоятельностью и личным пространством.",
+"Тебе может быть ближе тревожно-избегающий стиль: близость может одновременно привлекать и вызывать напряжение."
+];
+r.innerHTML="<h3>Результат: "+names[idx]+" стиль</h3><p>"+texts[idx]+"</p><small>Это только результат этого небольшого теста. Стиль привязанности нельзя достоверно определить по нескольким вопросам.</small>";
+r.scrollIntoView({behavior:"smooth"});
+}
+function showPage(id,btn){
+document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+if(btn)btn.classList.add("active");
+window.scrollTo({top:0,behavior:"smooth"});
+}
+</script>
+</body>
+</html>
