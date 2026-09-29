@@ -19,6 +19,12 @@ h1{font-size:42px;margin:0 0 12px}h2{color:#8a2949}h3{color:#8a2949}
 .question{margin-bottom:25px}.answer{display:block;width:100%;text-align:left;border:2px solid #f0d4dd;background:#fff;color:#30252a;border-radius:13px;padding:13px;margin:8px 0;cursor:pointer}
 .answer.selected{border-color:#8a2949;background:#fae8ee}
 .result{display:none;background:#f4dce5;border-radius:18px;padding:22px;margin-top:20px}
+.progress{height:8px;background:#f0d4dd;border-radius:10px;margin:12px 0 18px;overflow:hidden}
+#progressBar{height:100%;width:10%;background:#8a2949;border-radius:10px;transition:width .35s ease}
+.question{display:none;animation:fadeIn .35s ease}.question.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.answer{transition:transform .15s ease,background .15s ease,border-color .15s ease}
+.answer:active{transform:scale(.98)}
 small{color:#806c73}
 </style>
 </head>
@@ -75,10 +81,14 @@ small{color:#806c73}
 </section>
 
 <section id="test" class="page">
-<h2>Тест: какой стиль отношений тебе ближе?</h2>
-<div class="card"><p><b>Как проходить:</b> выбери вариант, который чаще всего похож на твою реакцию. В конце сайт покажет наиболее выраженный стиль.</p><small>Результат ознакомительный и не является диагнозом.</small></div>
+<h2>Тест: какой стиль привязанности тебе ближе?</h2>
+<div class="card">
+<p><b>Как проходить:</b> читай вопрос и нажимай на ответ, который больше всего похож на твою обычную реакцию. После выбора следующий вопрос появится автоматически.</p>
+<div id="progressText"><small>Вопрос 1 из 10</small></div>
+<div class="progress"><div id="progressBar"></div></div>
+<small>Результат ознакомительный и не является психологической диагностикой.</small>
+</div>
 <div id="quiz"></div>
-<button class="start" onclick="calculate()">Получить результат</button>
 <div id="result" class="result"></div>
 </section>
 
@@ -99,43 +109,139 @@ small{color:#806c73}
 
 <script>
 const questions=[
-["Если человек долго не отвечает…",["Я спокойно занимаюсь своими делами.","Начинаю думать, что он потерял интерес.","Мне хочется отдалиться и не писать первым.","Я переживаю, но одновременно не хочу показывать это."]],
-["Когда в отношениях возникает конфликт…",["Я стараюсь спокойно обсудить проблему.","Боюсь, что конфликт приведёт к расставанию.","Мне проще взять дистанцию.","Мне хочется близости, но я могу резко закрыться."]],
-["Если партнёр хочет провести время отдельно…",["Я нормально к этому отношусь.","Могу подумать, что я ему больше не нужен.","Мне даже комфортнее иметь больше пространства.","Мне сложно понять, хочу ли я быть ближе или дальше."]],
-["Мне проще всего…",["Доверять человеку и говорить о своих чувствах.","Получать подтверждение, что меня любят.","Сохранять независимость и личное пространство.","То приближаться к человеку, то отдаляться."]],
-["Когда я думаю о расставании…",["Понимаю, что будет неприятно, но смогу справиться.","Очень боюсь остаться один/одна.","Думаю, что лучше вообще не зависеть от отношений.","Одновременно боюсь потери и близости."]],
-["В отношениях для меня важно…",["Близость и самостоятельность одновременно.","Часто чувствовать, что я важен/важна.","Иметь много личного пространства.","Постоянно разбираться в своих противоречивых чувствах."]]
+["Если близкий человек долго не отвечает…",[
+"Я спокойно занимаюсь своими делами и жду ответа.",
+"Начинаю переживать, что он потерял ко мне интерес.",
+"Мне становится комфортнее заняться чем-то отдельно от него.",
+"Я и переживаю из-за молчания, и одновременно хочу отдалиться."
+]],
+["Если человек, который мне дорог, хочет провести время без меня…",[
+"Я понимаю, что у каждого может быть своё время и свои дела.",
+"Могу подумать, что я ему больше не нужен или не важен.",
+"Я скорее радуюсь возможности побыть одному.",
+"Мне одновременно хочется быть рядом и хочется закрыться."
+]],
+["Когда возникает конфликт, я чаще…",[
+"Стараюсь спокойно обсудить проблему.",
+"Боюсь, что из-за конфликта отношения могут закончиться.",
+"Хочу сделать паузу и побыть отдельно.",
+"Хочу решить проблему, но мне трудно говорить о своих чувствах."
+]],
+["Если я чувствую, что человек стал немного холоднее…",[
+"Сначала стараюсь узнать, что происходит, а не делать выводы.",
+"Начинаю искать причину в себе и сильно тревожиться.",
+"Мне проще тоже увеличить дистанцию.",
+"Я могу то пытаться сблизиться, то резко отдаляться."
+]],
+["Когда мне нужно попросить о поддержке…",[
+"Я могу прямо сказать, что мне нужна помощь.",
+"Мне важно убедиться, что меня не отвергнут.",
+"Мне непросто просить о помощи, поэтому я чаще справляюсь сам.",
+"Я хочу поддержки, но в последний момент могу передумать и закрыться."
+]],
+["Если близкий человек проводит время с другими людьми…",[
+"Я отношусь к этому спокойно: у него есть своя жизнь.",
+"Могу начать сравнивать себя с другими и переживать.",
+"Я считаю нормальным, что у каждого есть свои друзья и интересы.",
+"Я могу ревновать, но одновременно делать вид, что мне всё равно."
+]],
+["Если отношения становятся очень близкими…",[
+"Мне обычно комфортно с близостью и личным пространством одновременно.",
+"Мне хочется ещё больше уверенности, что я важен человеку.",
+"Иногда мне хочется увеличить дистанцию.",
+"Близость мне нравится, но иногда она начинает пугать."
+]],
+["Когда я сделал(а) что-то, что могло задеть близкого человека…",[
+"Я могу признать ошибку и обсудить её.",
+"Долго переживаю, что теперь человек будет хуже ко мне относиться.",
+"Мне проще немного отдалиться и переждать.",
+"Я хочу извиниться, но одновременно боюсь разговора и могу избегать его."
+]],
+["Если планы с близким человеком неожиданно меняются…",[
+"Я расстраиваюсь, но могу спокойно перестроить свои планы.",
+"Начинаю думать, что причина связана со мной.",
+"Я легко переключаюсь на свои дела.",
+"Сначала сильно переживаю, а потом могу решить, что вообще не хочу общаться."
+]],
+["Что для меня наиболее комфортно в отношениях?",[
+"Близость, доверие и возможность иметь личное пространство.",
+"Чувствовать, что меня любят, ценят и не собираются оставлять.",
+"Сохранять самостоятельность и не зависеть от постоянного общения.",
+"Иметь близость, но при этом сохранять возможность отдалиться, когда становится тревожно."
+]]
 ];
+
 const names=["Надёжный","Тревожный","Избегающий","Тревожно-избегающий"];
-const quiz=document.getElementById("quiz");
-questions.forEach((q,i)=>{
-let d=document.createElement("div");d.className="card question";
-d.innerHTML="<h3>"+(i+1)+". "+q[0]+"</h3>";
-q[1].forEach((a,j)=>d.innerHTML+=`<button class="answer" data-q="${i}" data-a="${j}" onclick="pick(this)">${a}</button>`);
-quiz.appendChild(d);
-});
-function pick(btn){
-document.querySelectorAll(`[data-q="${btn.dataset.q}"]`).forEach(x=>x.classList.remove("selected"));
-btn.classList.add("selected");
-}
-function calculate(){
-let scores=[0,0,0,0], done=0;
-questions.forEach((_,i)=>{
-let x=document.querySelector(`.answer.selected[data-q="${i}"]`);
-if(x){scores[+x.dataset.a]++;done++;}
-});
-let r=document.getElementById("result");r.style.display="block";
-if(done<questions.length){r.innerHTML="<b>Почти готово!</b><br>Ответь на все вопросы, чтобы получить результат.";return;}
-let max=Math.max(...scores), idx=scores.indexOf(max);
-let texts=[
-"Тебе может быть ближе надёжный стиль: обычно проще сочетать близость, доверие и самостоятельность.",
-"Тебе может быть ближе тревожный стиль: особенно важны уверенность в отношениях и подтверждение чувств.",
-"Тебе может быть ближе избегающий стиль: комфорт может быть связан с самостоятельностью и личным пространством.",
+const texts=[
+"Тебе может быть ближе надёжный стиль: тебе может быть проще сочетать близость, доверие и самостоятельность.",
+"Тебе может быть ближе тревожный стиль: для тебя может быть особенно важно чувствовать уверенность, внимание и стабильность в отношениях.",
+"Тебе может быть ближе избегающий стиль: тебе может быть комфортнее сохранять самостоятельность и личное пространство.",
 "Тебе может быть ближе тревожно-избегающий стиль: близость может одновременно привлекать и вызывать напряжение."
 ];
-r.innerHTML="<h3>Результат: "+names[idx]+" стиль</h3><p>"+texts[idx]+"</p><small>Это только результат этого небольшого теста. Стиль привязанности нельзя достоверно определить по нескольким вопросам.</small>";
-r.scrollIntoView({behavior:"smooth"});
+
+const quiz=document.getElementById("quiz");
+const progressText=document.getElementById("progressText");
+const progressBar=document.getElementById("progressBar");
+let currentQuestion=0;
+let answers=new Array(questions.length).fill(null);
+
+function renderQuestion(){
+    quiz.innerHTML="";
+    const q=questions[currentQuestion];
+    const d=document.createElement("div");
+    d.className="card question active";
+    d.innerHTML="<h3>"+(currentQuestion+1)+". "+q[0]+"</h3>";
+    q[1].forEach((a,j)=>{
+        const b=document.createElement("button");
+        b.className="answer";
+        b.textContent=a;
+        b.onclick=()=>pickAnswer(j,b);
+        d.appendChild(b);
+    });
+    quiz.appendChild(d);
+    progressText.innerHTML="<small>Вопрос "+(currentQuestion+1)+" из "+questions.length+"</small>";
+    progressBar.style.width=((currentQuestion+1)/questions.length*100)+"%";
 }
+
+function pickAnswer(answerIndex,btn){
+    answers[currentQuestion]=answerIndex;
+    document.querySelectorAll(".answer").forEach(x=>x.disabled=true);
+    btn.classList.add("selected");
+
+    setTimeout(()=>{
+        if(currentQuestion<questions.length-1){
+            currentQuestion++;
+            renderQuestion();
+        }else{
+            showResult();
+        }
+    },300);
+}
+
+function showResult(){
+    quiz.innerHTML="";
+    progressText.innerHTML="<small>Тест завершён — 10 из 10</small>";
+    progressBar.style.width="100%";
+    let scores=[0,0,0,0];
+    answers.forEach(a=>{ if(a!==null) scores[a]++; });
+    let max=Math.max(...scores);
+    let idx=scores.indexOf(max);
+    let r=document.getElementById("result");
+    r.style.display="block";
+    r.innerHTML="<h3>Результат: "+names[idx]+" стиль</h3><p>"+texts[idx]+"</p><p><small>Это результат небольшого ознакомительного теста. Он не определяет твой стиль привязанности точно и не заменяет консультацию специалиста.</small></p><button class='start' onclick='restartTest()'>Пройти ещё раз</button>";
+    r.scrollIntoView({behavior:"smooth",block:"center"});
+}
+
+function restartTest(){
+    currentQuestion=0;
+    answers=new Array(questions.length).fill(null);
+    document.getElementById("result").style.display="none";
+    renderQuestion();
+    window.scrollTo({top:0,behavior:"smooth"});
+}
+
+renderQuestion();
+
 function showPage(id,btn){
 document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
 document.getElementById(id).classList.add("active");
